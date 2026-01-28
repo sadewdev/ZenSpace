@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZenSpace | Personal Learning OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Lottie & fflate for TGS -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="https://unpkg.com/fflate@0.8.0/umd/index.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --app-bg: #F5F5F7; /* Apple Light Gray */
+            --sidebar-bg: rgba(255, 255, 255, 0.8);
+            --card-bg: #FFFFFF;
+            --accent: #007AFF; /* Apple Blue */
+            --text-main: #1D1D1F;
+            --text-sec: #86868B;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+            background-color: var(--app-bg);
+            color: var(--text-main);
+            overflow: hidden; /* App-like feel */
+        }
+
+        /* Glassmorphism Sidebar */
+        .sidebar {
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            border-radius: 10px;
+            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .nav-item:hover { background: rgba(0,0,0,0.03); }
+        .nav-item.active { background: #E4E4E4; color: black; font-weight: 600; }
+        .nav-item.active i { color: var(--accent); }
+
+        /* Content Area */
+        .content-area {
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        
+        /* Cards */
+        .ios-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .ios-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-radius: 99px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .btn-primary:active { opacity: 0.8; transform: scale(0.98); }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #D1D1D6; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex text-sm md:text-base">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar w-20 md:w-64 h-full flex flex-col justify-between p-4 z-20">
+        <div>
+            <!-- Logo Area -->
+            <div class="flex items-center gap-3 px-2 mb-8 mt-2">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-cyan-400 text-white flex items-center justify-center text-lg shadow-md">
+                    <i class="fa-solid fa-shapes"></i>
+                </div>
+                <div class="hidden md:block">
+                    <h1 class="font-bold text-lg tracking-tight">ZenSpace</h1>
+                    <p class="text-xs text-gray-400">Student OS</p>
+                </div>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="space-y-1">
+                <button onclick="router('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-gray-600 active">
+                    <i class="fa-solid fa-house w-6 text-center text-lg"></i>
+                    <span class="hidden md:block">Dashboard</span>
+                </button>
+                <button onclick="router('courses')" id="nav-courses" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-gray-600">
+                    <i class="fa-solid fa-book-open w-6 text-center text-lg"></i>
+                    <span class="hidden md:block">My Courses</span>
+                </button>
+                <button onclick="router('tasks')" id="nav-tasks" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-gray-600">
+                    <i class="fa-solid fa-check-circle w-6 text-center text-lg"></i>
+                    <span class="hidden md:block">Tasks</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- User Profile (Static) -->
+        <div class="flex items-center gap-3 px-2 py-3 mt-auto border-t border-gray-100 pt-4">
+            <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+                <img src="https://ui-avatars.com/api/?name=User&background=007AFF&color=fff" alt="User">
+            </div>
+            <div class="hidden md:block">
+                <p class="font-medium text-sm">Student</p>
+                <p class="text-xs text-gray-400">Local Account</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 h-full content-area p-6 md:p-10 relative">
+        
+        <!-- HEADER -->
+        <header class="flex justify-between items-center mb-8 fade-in">
+            <div>
+                <h2 id="page-title" class="text-3xl font-bold text-[#1D1D1F]">Welcome Back</h2>
+                <p id="page-subtitle" class="text-gray-500 mt-1">Here is your daily overview.</p>
+            </div>
+            <button onclick="openModal()" class="btn-primary w-10 h-10 md:w-auto md:px-5 md:py-2.5 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20">
+                <i class="fa-solid fa-plus"></i> <span class="hidden md:inline">New Item</span>
+            </button>
+        </header>
+
+        <!-- VIEWS -->
+        
+        <!-- 1. DASHBOARD VIEW -->
+        <div id="view-dashboard" class="fade-in">
+            <!-- Hero Card -->
+            <div class="w-full bg-white rounded-3xl p-8 mb-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between overflow-hidden relative">
+                <div class="z-10 max-w-lg">
+                    <h3 class="text-2xl font-bold mb-2">Ready to learn?</h3>
+                    <p class="text-gray-500 mb-6">You have <strong class="text-blue-500" id="pending-count">0</strong> pending tasks today. Stay focused!</p>
+                </div>
+                <!-- Animated Sticker: Welcome -->
+                <div class="w-48 h-48 md:absolute md:-right-4 md:-bottom-4 opacity-90">
+                    <lottie-player id="sticker-welcome" background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay></lottie-player>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Courses Card -->
+                <div onclick="router('courses')" class="ios-card p-6 cursor-pointer group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                            <i class="fa-solid fa-book text-orange-500 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-bold bg-gray-100 text-gray-500 px-2 py-1 rounded-full group-hover:bg-orange-100 group-hover:text-orange-600 transition-colors">Manage</span>
+                    </div>
+                    <h4 class="text-3xl font-bold text-gray-800 mb-1" id="course-count">0</h4>
+                    <p class="text-gray-500 text-sm">Active Courses</p>
+                </div>
+
+                <!-- Tasks Card -->
+                <div onclick="router('tasks')" class="ios-card p-6 cursor-pointer group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                            <i class="fa-solid fa-list-check text-green-500 text-xl"></i>
+                        </div>
+                        <span class="text-xs font-bold bg-gray-100 text-gray-500 px-2 py-1 rounded-full group-hover:bg-green-100 group-hover:text-green-600 transition-colors">View All</span>
+                    </div>
+                    <h4 class="text-3xl font-bold text-gray-800 mb-1" id="task-count">0</h4>
+                    <p class="text-gray-500 text-sm">Tasks Remaining</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. COURSES VIEW -->
+        <div id="view-courses" class="hidden fade-in">
+            <div id="courses-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Course items will be injected here -->
+            </div>
+            <!-- Empty State -->
+            <div id="courses-empty" class="empty-state hidden">
+                <div class="w-40 h-40 mb-4">
+                    <lottie-player id="sticker-empty-books" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+                <p class="text-gray-400 font-medium">No courses added yet.</p>
+            </div>
+        </div>
+
+        <!-- 3. TASKS VIEW -->
+        <div id="view-tasks" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <ul id="tasks-list" class="divide-y divide-gray-100">
+                    <!-- Tasks will be injected here -->
+                </ul>
+            </div>
+            <!-- Empty State -->
+            <div id="tasks-empty" class="empty-state hidden">
+                <div class="w-40 h-40 mb-4">
+                    <lottie-player id="sticker-empty-tasks" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+                <p class="text-gray-400 font-medium">All tasks completed! Relax.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL (Add New) -->
+    <div id="add-modal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div onclick="closeModal()" class="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-100 animate-bounce-in">
+            <h3 class="text-xl font-bold mb-6">Add New Item</h3>
+            
+            <!-- Type Switcher -->
+            <div class="flex bg-gray-100 p-1 rounded-lg mb-6">
+                <button onclick="switchModalType('course')" id="btn-type-course" class="flex-1 py-1.5 rounded-md text-sm font-medium bg-white shadow-sm transition-all">Course</button>
+                <button onclick="switchModalType('task')" id="btn-type-task" class="flex-1 py-1.5 rounded-md text-sm font-medium text-gray-500 transition-all">Task</button>
+            </div>
+
+            <form id="add-form" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="item-type" value="course">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Title</label>
+                        <input type="text" id="input-title" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" placeholder="e.g. Mathematics">
+                    </div>
+                    
+                    <div id="field-subtitle">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Description / Notes</label>
+                        <input type="text" id="input-subtitle" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" placeholder="e.g. Chapter 1 - Algebra">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-8">
+                    <button type="button" onclick="closeModal()" class="flex-1 py-3 rounded-xl font-medium text-gray-500 hover:bg-gray-100 transition-colors">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl font-medium text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- ASSET LOADER (TGS) ---
+        async function loadTGS(url, elementId) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) return;
+                const buffer = await response.arrayBuffer();
+                const decompressed = fflate.gunzipSync(new Uint8Array(buffer));
+                const json = JSON.parse(new TextDecoder().decode(decompressed));
+                const blobUrl = URL.createObjectURL(new Blob([JSON.stringify(json)], {type: "application/json"}));
+                const player = document.getElementById(elementId);
+                if(player) player.load(blobUrl);
+            } catch (e) { console.log("Sticker not found:", url); }
+        }
+
+        // --- INDEXED DB WRAPPER ---
+        const DB_NAME = 'ZenSpaceDB';
+        const DB_VERSION = 1;
+        let db;
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (e) => {
+                    db = e.target.result;
+                    if (!db.objectStoreNames.contains('courses')) db.createObjectStore('courses', { keyPath: 'id', autoIncrement: true });
+                    if (!db.objectStoreNames.contains('tasks')) db.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true });
+                };
+                request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+                request.onerror = (e) => reject(e);
+            });
+        }
+
+        function addItem(storeName, item) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                tx.objectStore(storeName).add(item);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        function getItems(storeName) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const request = tx.objectStore(storeName).getAll();
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        function deleteItem(storeName, id) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                tx.objectStore(storeName).delete(id);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        // --- APP LOGIC ---
+        
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initDB();
+            
+            // Load Stickers (Make sure these exist in assets folder!)
+            loadTGS('assets/welcome.tgs', 'sticker-welcome');
+            loadTGS('assets/books.tgs', 'sticker-empty-books');
+            loadTGS('assets/todo.tgs', 'sticker-empty-tasks');
+
+            refreshData();
+        });
+
+        async function refreshData() {
+            const courses = await getItems('courses');
+            const tasks = await getItems('tasks');
+
+            // Update Counts
+            document.getElementById('course-count').innerText = courses.length;
+            document.getElementById('task-count').innerText = tasks.length;
+            document.getElementById('pending-count').innerText = tasks.length;
+
+            renderCourses(courses);
+            renderTasks(tasks);
+        }
+
+        // Render Functions
+        function renderCourses(courses) {
+            const container = document.getElementById('courses-list');
+            const emptyState = document.getElementById('courses-empty');
+            container.innerHTML = '';
+            
+            if (courses.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                courses.forEach(course => {
+                    const div = document.createElement('div');
+                    div.className = 'ios-card p-6 flex flex-col justify-between h-40 relative group';
+                    div.innerHTML = `
+                        <div>
+                            <h4 class="font-bold text-xl text-gray-800">${course.title}</h4>
+                            <p class="text-sm text-gray-500 mt-1">${course.subtitle || 'No details'}</p>
+                        </div>
+                        <button onclick="remove('courses', ${course.id})" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                        <div class="w-8 h-1 bg-blue-500 rounded-full mt-auto"></div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function renderTasks(tasks) {
+            const container = document.getElementById('tasks-list');
+            const emptyState = document.getElementById('tasks-empty');
+            container.innerHTML = '';
+
+            if (tasks.length === 0) {
+                emptyState.classList.remove('hidden');
+                container.parentElement.classList.add('hidden'); // Hide list container border
+            } else {
+                emptyState.classList.add('hidden');
+                container.parentElement.classList.remove('hidden');
+                tasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'p-4 flex items-center justify-between hover:bg-gray-50 transition-colors group';
+                    li.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer hover:border-blue-500" onclick="remove('tasks', ${task.id})">
+                                <div class="w-3 h-3 rounded-full bg-blue-500 opacity-0 hover:opacity-100 transition-opacity"></div>
+                            </div>
+                            <span class="font-medium text-gray-700">${task.title}</span>
+                        </div>
+                        <button onclick="remove('tasks', ${task.id})" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    `;
+                    container.appendChild(li);
+                });
+            }
+        }
+
+        // Actions
+        async function remove(store, id) {
+            if(confirm('Delete this item?')) {
+                await deleteItem(store, id);
+                refreshData();
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const type = document.getElementById('item-type').value;
+            const title = document.getElementById('input-title').value;
+            const subtitle = document.getElementById('input-subtitle').value;
+
+            if (type === 'course') {
+                await addItem('courses', { title, subtitle, created: Date.now() });
+            } else {
+                await addItem('tasks', { title, completed: false, created: Date.now() });
+            }
+
+            closeModal();
+            refreshData();
+            e.target.reset();
+        }
+
+        // Navigation Router
+        function router(view) {
+            // Hide all views
+            ['dashboard', 'courses', 'tasks'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                document.getElementById(`nav-${v}`).classList.remove('active');
+            });
+
+            // Show current
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById(`nav-${view}`).classList.add('active');
+
+            // Update Titles
+            const titles = {
+                'dashboard': ['Welcome Back', 'Here is your daily overview.'],
+                'courses': ['My Courses', 'Manage your subjects and classes.'],
+                'tasks': ['To-Do List', 'Stay on top of your assignments.']
+            };
+            document.getElementById('page-title').innerText = titles[view][0];
+            document.getElementById('page-subtitle').innerText = titles[view][1];
+        }
+
+        // Modal Logic
+        function openModal() { document.getElementById('add-modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('add-modal').classList.add('hidden'); }
+        
+        function switchModalType(type) {
+            document.getElementById('item-type').value = type;
+            const btnCourse = document.getElementById('btn-type-course');
+            const btnTask = document.getElementById('btn-type-task');
+            const subField = document.getElementById('field-subtitle');
+            const titleInput = document.getElementById('input-title');
+
+            if (type === 'course') {
+                btnCourse.classList.add('bg-white', 'shadow-sm', 'text-black');
+                btnCourse.classList.remove('text-gray-500');
+                btnTask.classList.remove('bg-white', 'shadow-sm', 'text-black');
+                btnTask.classList.add('text-gray-500');
+                subField.classList.remove('hidden');
+                titleInput.placeholder = "e.g. Mathematics";
+            } else {
+                btnTask.classList.add('bg-white', 'shadow-sm', 'text-black');
+                btnTask.classList.remove('text-gray-500');
+                btnCourse.classList.remove('bg-white', 'shadow-sm', 'text-black');
+                btnCourse.classList.add('text-gray-500');
+                subField.classList.add('hidden');
+                titleInput.placeholder = "e.g. Finish Math Homework";
+            }
+        }
+    </script>
+</body>
+</html>
