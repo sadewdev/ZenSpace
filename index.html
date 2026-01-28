@@ -6,7 +6,6 @@
     <title>ZenSpace | Personal Learning OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Lottie & fflate for TGS -->
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script src="https://unpkg.com/fflate@0.8.0/umd/index.js"></script>
 
@@ -14,10 +13,12 @@
         @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
         
         :root {
-            --app-bg: #F5F5F7; /* Apple Light Gray */
-            --sidebar-bg: rgba(255, 255, 255, 0.8);
+            --app-bg: #F5F5F7;
+            --sidebar-bg: rgba(255, 255, 255, 0.85);
             --card-bg: #FFFFFF;
-            --accent: #007AFF; /* Apple Blue */
+            --accent: #007AFF;
+            --danger: #FF3B30;
+            --success: #34C759;
             --text-main: #1D1D1F;
             --text-sec: #86868B;
         }
@@ -26,7 +27,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
             background-color: var(--app-bg);
             color: var(--text-main);
-            overflow: hidden; /* App-like feel */
+            overflow: hidden;
         }
 
         /* Glassmorphism Sidebar */
@@ -38,11 +39,11 @@
         }
 
         .nav-item {
-            border-radius: 10px;
+            border-radius: 12px;
             transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
-        .nav-item:hover { background: rgba(0,0,0,0.03); }
-        .nav-item.active { background: #E4E4E4; color: black; font-weight: 600; }
+        .nav-item:hover { background: rgba(0,0,0,0.04); }
+        .nav-item.active { background: #E8E8ED; color: black; font-weight: 600; }
         .nav-item.active i { color: var(--accent); }
 
         /* Content Area */
@@ -54,14 +55,14 @@
         /* Cards */
         .ios-card {
             background: var(--card-bg);
-            border-radius: 18px;
+            border-radius: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             border: 1px solid rgba(0,0,0,0.02);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .ios-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
         }
 
         /* Buttons */
@@ -70,15 +71,53 @@
             color: white;
             border-radius: 99px;
             font-weight: 500;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
         }
-        .btn-primary:active { opacity: 0.8; transform: scale(0.98); }
+        .btn-primary:active { opacity: 0.9; transform: scale(0.97); }
 
         /* Animations */
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Custom Scrollbar */
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Checkbox Animation */
+        .task-checkbox {
+            transition: all 0.2s;
+        }
+        .task-checkbox.checked {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+        .task-text.checked {
+            text-decoration: line-through;
+            color: var(--text-sec);
+        }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #D1D1D6; border-radius: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -89,65 +128,65 @@
             align-items: center;
             justify-content: center;
             opacity: 0.6;
-            margin-top: 40px;
+            padding: 40px 0;
         }
     </style>
 </head>
 <body class="h-screen w-screen flex text-sm md:text-base">
 
     <!-- Sidebar Navigation -->
-    <aside class="sidebar w-20 md:w-64 h-full flex flex-col justify-between p-4 z-20">
+    <aside class="sidebar w-20 md:w-64 h-full flex flex-col justify-between p-4 z-20 shrink-0">
         <div>
             <!-- Logo Area -->
             <div class="flex items-center gap-3 px-2 mb-8 mt-2">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-cyan-400 text-white flex items-center justify-center text-lg shadow-md">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-cyan-400 text-white flex items-center justify-center text-lg shadow-md shrink-0">
                     <i class="fa-solid fa-shapes"></i>
                 </div>
-                <div class="hidden md:block">
-                    <h1 class="font-bold text-lg tracking-tight">ZenSpace</h1>
-                    <p class="text-xs text-gray-400">Student OS</p>
+                <div class="hidden md:block overflow-hidden">
+                    <h1 class="font-bold text-lg tracking-tight truncate">ZenSpace</h1>
+                    <p class="text-xs text-gray-400 truncate">Student OS</p>
                 </div>
             </div>
 
             <!-- Nav Links -->
-            <nav class="space-y-1">
+            <nav class="space-y-2">
                 <button onclick="router('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-gray-600 active">
                     <i class="fa-solid fa-house w-6 text-center text-lg"></i>
-                    <span class="hidden md:block">Dashboard</span>
+                    <span class="hidden md:block font-medium">Dashboard</span>
                 </button>
                 <button onclick="router('courses')" id="nav-courses" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-gray-600">
                     <i class="fa-solid fa-book-open w-6 text-center text-lg"></i>
-                    <span class="hidden md:block">My Courses</span>
+                    <span class="hidden md:block font-medium">My Courses</span>
                 </button>
                 <button onclick="router('tasks')" id="nav-tasks" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-gray-600">
                     <i class="fa-solid fa-check-circle w-6 text-center text-lg"></i>
-                    <span class="hidden md:block">Tasks</span>
+                    <span class="hidden md:block font-medium">Tasks</span>
                 </button>
             </nav>
         </div>
 
-        <!-- User Profile (Static) -->
-        <div class="flex items-center gap-3 px-2 py-3 mt-auto border-t border-gray-100 pt-4">
-            <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+        <!-- User Profile -->
+        <div class="flex items-center gap-3 px-2 py-3 mt-auto border-t border-gray-200/50 pt-4">
+            <div class="w-9 h-9 rounded-full bg-gray-200 overflow-hidden shrink-0">
                 <img src="https://ui-avatars.com/api/?name=User&background=007AFF&color=fff" alt="User">
             </div>
-            <div class="hidden md:block">
-                <p class="font-medium text-sm">Student</p>
-                <p class="text-xs text-gray-400">Local Account</p>
+            <div class="hidden md:block overflow-hidden">
+                <p class="font-bold text-sm truncate">Student</p>
+                <p class="text-xs text-gray-400 truncate">Local Account</p>
             </div>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 h-full content-area p-6 md:p-10 relative">
+    <main class="flex-1 h-full content-area p-6 md:p-10 relative bg-[#F5F5F7]">
         
         <!-- HEADER -->
-        <header class="flex justify-between items-center mb-8 fade-in">
+        <header class="flex justify-between items-center mb-8 fade-in sticky top-0 z-10 py-2 bg-[#F5F5F7]/90 backdrop-blur-sm">
             <div>
                 <h2 id="page-title" class="text-3xl font-bold text-[#1D1D1F]">Welcome Back</h2>
                 <p id="page-subtitle" class="text-gray-500 mt-1">Here is your daily overview.</p>
             </div>
-            <button onclick="openModal()" class="btn-primary w-10 h-10 md:w-auto md:px-5 md:py-2.5 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20">
+            <button onclick="openModal()" class="btn-primary w-10 h-10 md:w-auto md:px-5 md:py-2.5 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-shadow">
                 <i class="fa-solid fa-plus"></i> <span class="hidden md:inline">New Item</span>
             </button>
         </header>
@@ -155,114 +194,152 @@
         <!-- VIEWS -->
         
         <!-- 1. DASHBOARD VIEW -->
-        <div id="view-dashboard" class="fade-in">
+        <div id="view-dashboard" class="fade-in max-w-5xl mx-auto">
             <!-- Hero Card -->
             <div class="w-full bg-white rounded-3xl p-8 mb-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between overflow-hidden relative">
                 <div class="z-10 max-w-lg">
-                    <h3 class="text-2xl font-bold mb-2">Ready to learn?</h3>
-                    <p class="text-gray-500 mb-6">You have <strong class="text-blue-500" id="pending-count">0</strong> pending tasks today. Stay focused!</p>
+                    <h3 class="text-2xl font-bold mb-2 text-gray-800">Ready to learn?</h3>
+                    <p class="text-gray-500 mb-6 text-base">You have <strong class="text-blue-600 text-lg" id="pending-count">0</strong> pending tasks today. Keep up the momentum!</p>
+                    <button onclick="router('tasks')" class="text-blue-500 font-semibold text-sm hover:text-blue-600 flex items-center gap-1">
+                        Go to Tasks <i class="fa-solid fa-arrow-right"></i>
+                    </button>
                 </div>
-                <!-- Animated Sticker: Welcome -->
+                <!-- Animated Sticker -->
                 <div class="w-48 h-48 md:absolute md:-right-4 md:-bottom-4 opacity-90">
                     <lottie-player id="sticker-welcome" background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay></lottie-player>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Courses Card -->
-                <div onclick="router('courses')" class="ios-card p-6 cursor-pointer group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                            <i class="fa-solid fa-book text-orange-500 text-xl"></i>
-                        </div>
-                        <span class="text-xs font-bold bg-gray-100 text-gray-500 px-2 py-1 rounded-full group-hover:bg-orange-100 group-hover:text-orange-600 transition-colors">Manage</span>
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Quick Courses Overview -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-1">
+                        <h4 class="font-bold text-gray-800 text-lg">My Courses</h4>
+                        <button onclick="router('courses')" class="text-xs font-medium text-gray-400 hover:text-blue-500">See All</button>
                     </div>
-                    <h4 class="text-3xl font-bold text-gray-800 mb-1" id="course-count">0</h4>
-                    <p class="text-gray-500 text-sm">Active Courses</p>
+                    
+                    <div id="dashboard-courses" class="grid grid-cols-2 gap-4">
+                        <!-- Dynamic Content -->
+                    </div>
                 </div>
 
-                <!-- Tasks Card -->
-                <div onclick="router('tasks')" class="ios-card p-6 cursor-pointer group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                            <i class="fa-solid fa-list-check text-green-500 text-xl"></i>
-                        </div>
-                        <span class="text-xs font-bold bg-gray-100 text-gray-500 px-2 py-1 rounded-full group-hover:bg-green-100 group-hover:text-green-600 transition-colors">View All</span>
+                <!-- Today's Focus (Tasks) -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-1">
+                        <h4 class="font-bold text-gray-800 text-lg">Today's Focus</h4>
+                        <button onclick="router('tasks')" class="text-xs font-medium text-gray-400 hover:text-blue-500">See All</button>
                     </div>
-                    <h4 class="text-3xl font-bold text-gray-800 mb-1" id="task-count">0</h4>
-                    <p class="text-gray-500 text-sm">Tasks Remaining</p>
+                    
+                    <div class="bg-white rounded-3xl p-2 shadow-sm border border-gray-100 min-h-[150px]">
+                        <ul id="dashboard-tasks" class="space-y-1">
+                            <!-- Dynamic Content -->
+                        </ul>
+                        <div id="dashboard-tasks-empty" class="hidden h-full flex flex-col items-center justify-center py-8 text-gray-400 text-sm">
+                            <i class="fa-regular fa-calendar-check text-2xl mb-2 text-green-500"></i>
+                            <p>All caught up!</p>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
 
         <!-- 2. COURSES VIEW -->
-        <div id="view-courses" class="hidden fade-in">
+        <div id="view-courses" class="hidden fade-in max-w-6xl mx-auto">
             <div id="courses-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Course items will be injected here -->
+                <!-- Course items -->
             </div>
             <!-- Empty State -->
             <div id="courses-empty" class="empty-state hidden">
-                <div class="w-40 h-40 mb-4">
+                <div class="w-48 h-48 mb-4">
                     <lottie-player id="sticker-empty-books" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <p class="text-gray-400 font-medium">No courses added yet.</p>
+                <h3 class="text-lg font-bold text-gray-700">No courses yet</h3>
+                <p class="text-gray-400 font-medium">Add your subjects to get started.</p>
+                <button onclick="openModal('course')" class="mt-6 text-blue-500 font-medium hover:underline">Add First Course</button>
             </div>
         </div>
 
         <!-- 3. TASKS VIEW -->
-        <div id="view-tasks" class="hidden fade-in">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <ul id="tasks-list" class="divide-y divide-gray-100">
-                    <!-- Tasks will be injected here -->
+        <div id="view-tasks" class="hidden fade-in max-w-4xl mx-auto">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-[200px]">
+                <div class="p-6 border-b border-gray-50 flex justify-between items-center">
+                    <h3 class="font-bold text-lg text-gray-800">To-Do List</h3>
+                    <span class="text-xs font-medium bg-gray-100 px-3 py-1 rounded-full text-gray-500" id="task-badge-count">0 Items</span>
+                </div>
+                <ul id="tasks-list" class="divide-y divide-gray-50">
+                    <!-- Tasks items -->
                 </ul>
             </div>
             <!-- Empty State -->
-            <div id="tasks-empty" class="empty-state hidden">
-                <div class="w-40 h-40 mb-4">
+            <div id="tasks-empty" class="empty-state hidden mt-8">
+                <div class="w-48 h-48 mb-4">
                     <lottie-player id="sticker-empty-tasks" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <p class="text-gray-400 font-medium">All tasks completed! Relax.</p>
+                <h3 class="text-lg font-bold text-gray-700">You're all clear!</h3>
+                <p class="text-gray-400 font-medium">Time to relax or learn something new.</p>
+                <button onclick="openModal('task')" class="mt-6 text-blue-500 font-medium hover:underline">Add New Task</button>
             </div>
         </div>
 
     </main>
 
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check text-green-400"></i>
+        <span id="toast-message">Action Completed</span>
+    </div>
+
     <!-- MODAL (Add New) -->
     <div id="add-modal" class="fixed inset-0 z-50 hidden">
-        <!-- Backdrop -->
-        <div onclick="closeModal()" class="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity"></div>
-        
-        <!-- Modal Content -->
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-100 animate-bounce-in">
-            <h3 class="text-xl font-bold mb-6">Add New Item</h3>
+        <div onclick="closeModal()" class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 border border-gray-100 animate-fadeIn scale-95 transition-transform duration-200" id="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Add New Item</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
             
-            <!-- Type Switcher -->
-            <div class="flex bg-gray-100 p-1 rounded-lg mb-6">
-                <button onclick="switchModalType('course')" id="btn-type-course" class="flex-1 py-1.5 rounded-md text-sm font-medium bg-white shadow-sm transition-all">Course</button>
-                <button onclick="switchModalType('task')" id="btn-type-task" class="flex-1 py-1.5 rounded-md text-sm font-medium text-gray-500 transition-all">Task</button>
+            <div class="flex bg-gray-100 p-1 rounded-xl mb-6">
+                <button onclick="switchModalType('course')" id="btn-type-course" class="flex-1 py-2 rounded-lg text-sm font-semibold bg-white shadow-sm transition-all text-gray-900">Course</button>
+                <button onclick="switchModalType('task')" id="btn-type-task" class="flex-1 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all">Task</button>
             </div>
 
             <form id="add-form" onsubmit="handleFormSubmit(event)">
                 <input type="hidden" id="item-type" value="course">
                 
-                <div class="space-y-4">
+                <div class="space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Title</label>
-                        <input type="text" id="input-title" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" placeholder="e.g. Mathematics">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-2 pl-1">Title</label>
+                        <input type="text" id="input-title" required class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder-gray-400" placeholder="e.g. Mathematics">
                     </div>
                     
                     <div id="field-subtitle">
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Description / Notes</label>
-                        <input type="text" id="input-subtitle" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" placeholder="e.g. Chapter 1 - Algebra">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-2 pl-1">Description / Notes</label>
+                        <input type="text" id="input-subtitle" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder-gray-400" placeholder="e.g. Chapter 1 - Algebra">
                     </div>
                 </div>
 
-                <div class="flex gap-3 mt-8">
-                    <button type="button" onclick="closeModal()" class="flex-1 py-3 rounded-xl font-medium text-gray-500 hover:bg-gray-100 transition-colors">Cancel</button>
-                    <button type="submit" class="flex-1 py-3 rounded-xl font-medium text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all">Save Item</button>
-                </div>
+                <button type="submit" class="w-full mt-8 py-3.5 rounded-2xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 active:scale-95 transition-all">Save Item</button>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL (Confirm Delete) -->
+    <div id="delete-modal" class="fixed inset-0 z-[60] hidden">
+        <div onclick="closeDeleteModal()" class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 border border-gray-100 text-center">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-regular fa-trash-can"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Delete this item?</h3>
+            <p class="text-gray-500 text-sm mb-6">This action cannot be undone.</p>
+            
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+                <button id="confirm-delete-btn" class="flex-1 py-3 rounded-xl font-medium text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 transition-all">Delete</button>
+            </div>
         </div>
     </div>
 
@@ -281,7 +358,7 @@
             } catch (e) { console.log("Sticker not found:", url); }
         }
 
-        // --- INDEXED DB WRAPPER ---
+        // --- INDEXED DB ---
         const DB_NAME = 'ZenSpaceDB';
         const DB_VERSION = 1;
         let db;
@@ -315,6 +392,14 @@
             });
         }
 
+        function updateItem(storeName, item) {
+             return new Promise((resolve) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                tx.objectStore(storeName).put(item);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
         function deleteItem(storeName, id) {
             return new Promise((resolve) => {
                 const tx = db.transaction(storeName, 'readwrite');
@@ -325,32 +410,30 @@
 
         // --- APP LOGIC ---
         
-        // Initial Load
         window.addEventListener('DOMContentLoaded', async () => {
             await initDB();
-            
-            // Load Stickers (Make sure these exist in assets folder!)
             loadTGS('assets/welcome.tgs', 'sticker-welcome');
             loadTGS('assets/books.tgs', 'sticker-empty-books');
             loadTGS('assets/todo.tgs', 'sticker-empty-tasks');
-
             refreshData();
         });
 
         async function refreshData() {
-            const courses = await getItems('courses');
-            const tasks = await getItems('tasks');
+            const courses = (await getItems('courses')).reverse(); // Newest first
+            const tasks = (await getItems('tasks')).sort((a, b) => a.completed - b.completed || b.created - a.created);
 
+            const pendingTasks = tasks.filter(t => !t.completed).length;
+            
             // Update Counts
-            document.getElementById('course-count').innerText = courses.length;
-            document.getElementById('task-count').innerText = tasks.length;
-            document.getElementById('pending-count').innerText = tasks.length;
+            document.getElementById('pending-count').innerText = pendingTasks;
+            document.getElementById('task-badge-count').innerText = `${tasks.length} Items`;
 
             renderCourses(courses);
             renderTasks(tasks);
+            renderDashboard(courses, tasks);
         }
 
-        // Render Functions
+        // Renders
         function renderCourses(courses) {
             const container = document.getElementById('courses-list');
             const emptyState = document.getElementById('courses-empty');
@@ -362,16 +445,18 @@
                 emptyState.classList.add('hidden');
                 courses.forEach(course => {
                     const div = document.createElement('div');
-                    div.className = 'ios-card p-6 flex flex-col justify-between h-40 relative group';
+                    div.className = 'ios-card p-6 flex flex-col justify-between h-44 relative group border-l-4 border-l-blue-500';
                     div.innerHTML = `
                         <div>
-                            <h4 class="font-bold text-xl text-gray-800">${course.title}</h4>
-                            <p class="text-sm text-gray-500 mt-1">${course.subtitle || 'No details'}</p>
+                            <div class="flex justify-between items-start">
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">Course</span>
+                                <button onclick="requestDelete('courses', ${course.id})" class="text-gray-300 hover:text-red-500 transition-colors p-1">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </div>
+                            <h4 class="font-bold text-xl text-gray-800 line-clamp-2 leading-tight">${course.title}</h4>
+                            <p class="text-sm text-gray-500 mt-2 line-clamp-2">${course.subtitle || 'No details added'}</p>
                         </div>
-                        <button onclick="remove('courses', ${course.id})" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                        <div class="w-8 h-1 bg-blue-500 rounded-full mt-auto"></div>
                     `;
                     container.appendChild(div);
                 });
@@ -385,22 +470,28 @@
 
             if (tasks.length === 0) {
                 emptyState.classList.remove('hidden');
-                container.parentElement.classList.add('hidden'); // Hide list container border
+                container.parentElement.classList.add('hidden');
             } else {
                 emptyState.classList.add('hidden');
                 container.parentElement.classList.remove('hidden');
                 tasks.forEach(task => {
                     const li = document.createElement('li');
-                    li.className = 'p-4 flex items-center justify-between hover:bg-gray-50 transition-colors group';
+                    li.className = 'p-4 flex items-center justify-between hover:bg-gray-50 transition-colors group cursor-pointer';
+                    // Clicking row toggles check
+                    li.onclick = (e) => {
+                        if(e.target.closest('button')) return; // Ignore delete button click
+                        toggleTask(task);
+                    };
+
                     li.innerHTML = `
-                        <div class="flex items-center gap-4">
-                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer hover:border-blue-500" onclick="remove('tasks', ${task.id})">
-                                <div class="w-3 h-3 rounded-full bg-blue-500 opacity-0 hover:opacity-100 transition-opacity"></div>
+                        <div class="flex items-center gap-4 flex-1">
+                            <div class="task-checkbox w-6 h-6 rounded-full border-2 ${task.completed ? 'border-green-500 bg-green-500 checked' : 'border-gray-300'} flex items-center justify-center transition-all">
+                                ${task.completed ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}
                             </div>
-                            <span class="font-medium text-gray-700">${task.title}</span>
+                            <span class="font-medium text-gray-700 task-text ${task.completed ? 'checked' : ''} transition-all">${task.title}</span>
                         </div>
-                        <button onclick="remove('tasks', ${task.id})" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i class="fa-solid fa-xmark"></i>
+                        <button onclick="requestDelete('tasks', ${task.id})" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2">
+                            <i class="fa-regular fa-trash-can"></i>
                         </button>
                     `;
                     container.appendChild(li);
@@ -408,13 +499,98 @@
             }
         }
 
-        // Actions
-        async function remove(store, id) {
-            if(confirm('Delete this item?')) {
-                await deleteItem(store, id);
-                refreshData();
+        function renderDashboard(courses, tasks) {
+            // Courses Preview (Take first 4)
+            const courseContainer = document.getElementById('dashboard-courses');
+            courseContainer.innerHTML = '';
+            
+            if(courses.length === 0) {
+                 courseContainer.parentElement.innerHTML = `
+                    <div class="flex items-center justify-between px-1"><h4 class="font-bold text-gray-800 text-lg">My Courses</h4></div>
+                    <div onclick="openModal('course')" class="ios-card p-6 flex flex-col items-center justify-center h-32 border-dashed border-2 border-gray-200 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all">
+                        <i class="fa-solid fa-plus text-blue-500 mb-2"></i>
+                        <span class="text-sm font-medium text-gray-500">Add Course</span>
+                    </div>
+                 `;
+            } else {
+                courses.slice(0, 2).forEach(course => {
+                    const div = document.createElement('div');
+                    div.className = 'ios-card p-4 flex flex-col justify-center h-32 cursor-pointer hover:bg-blue-50/50';
+                    div.onclick = () => router('courses');
+                    div.innerHTML = `
+                        <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center mb-2 text-orange-500"><i class="fa-solid fa-book"></i></div>
+                        <h5 class="font-bold text-gray-800 text-sm line-clamp-1">${course.title}</h5>
+                        <p class="text-xs text-gray-400 line-clamp-1">${course.subtitle || 'Course'}</p>
+                    `;
+                    courseContainer.appendChild(div);
+                });
+                
+                // Add a "Add" card if less than 2
+                if(courses.length < 2) {
+                     const addDiv = document.createElement('div');
+                     addDiv.className = 'ios-card p-4 flex flex-col items-center justify-center h-32 border-dashed border-2 border-gray-200 cursor-pointer hover:border-blue-400 hover:bg-blue-50';
+                     addDiv.onclick = () => openModal('course');
+                     addDiv.innerHTML = `<i class="fa-solid fa-plus text-gray-400"></i>`;
+                     courseContainer.appendChild(addDiv);
+                }
+            }
+
+            // Tasks Preview (Take first 3 pending)
+            const taskContainer = document.getElementById('dashboard-tasks');
+            const taskEmpty = document.getElementById('dashboard-tasks-empty');
+            const pendingTasks = tasks.filter(t => !t.completed).slice(0, 3);
+            
+            taskContainer.innerHTML = '';
+            
+            if(pendingTasks.length === 0) {
+                taskContainer.classList.add('hidden');
+                taskEmpty.classList.remove('hidden');
+            } else {
+                taskContainer.classList.remove('hidden');
+                taskEmpty.classList.add('hidden');
+                
+                pendingTasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors';
+                    li.onclick = () => toggleTask(task);
+                    li.innerHTML = `
+                        <div class="w-5 h-5 rounded-full border-2 border-gray-300 hover:border-blue-500 transition-colors"></div>
+                        <span class="text-sm font-medium text-gray-700 truncate flex-1">${task.title}</span>
+                    `;
+                    taskContainer.appendChild(li);
+                });
             }
         }
+
+        // Logic Actions
+        async function toggleTask(task) {
+            task.completed = !task.completed;
+            await updateItem('tasks', task);
+            refreshData();
+            if(task.completed) showToast("Task Completed!");
+        }
+
+        // Custom Delete Modal Logic
+        let deleteTarget = null; // { store: 'tasks', id: 1 }
+
+        function requestDelete(store, id) {
+            deleteTarget = { store, id };
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+            deleteTarget = null;
+        }
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            if(deleteTarget) {
+                await deleteItem(deleteTarget.store, deleteTarget.id);
+                refreshData();
+                showToast("Item Deleted");
+                closeDeleteModal();
+            }
+        });
 
         async function handleFormSubmit(e) {
             e.preventDefault();
@@ -424,8 +600,10 @@
 
             if (type === 'course') {
                 await addItem('courses', { title, subtitle, created: Date.now() });
+                showToast("Course Added Successfully");
             } else {
                 await addItem('tasks', { title, completed: false, created: Date.now() });
+                showToast("Task Added Successfully");
             }
 
             closeModal();
@@ -433,19 +611,16 @@
             e.target.reset();
         }
 
-        // Navigation Router
+        // Router & UI
         function router(view) {
-            // Hide all views
             ['dashboard', 'courses', 'tasks'].forEach(v => {
                 document.getElementById(`view-${v}`).classList.add('hidden');
                 document.getElementById(`nav-${v}`).classList.remove('active');
             });
-
-            // Show current
             document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById(`view-${view}`).classList.add('fade-in'); // Re-trigger anim
             document.getElementById(`nav-${view}`).classList.add('active');
 
-            // Update Titles
             const titles = {
                 'dashboard': ['Welcome Back', 'Here is your daily overview.'],
                 'courses': ['My Courses', 'Manage your subjects and classes.'],
@@ -455,8 +630,10 @@
             document.getElementById('page-subtitle').innerText = titles[view][1];
         }
 
-        // Modal Logic
-        function openModal() { document.getElementById('add-modal').classList.remove('hidden'); }
+        function openModal(type) {
+            document.getElementById('add-modal').classList.remove('hidden');
+            if(type) switchModalType(type);
+        }
         function closeModal() { document.getElementById('add-modal').classList.add('hidden'); }
         
         function switchModalType(type) {
@@ -481,6 +658,13 @@
                 subField.classList.add('hidden');
                 titleInput.placeholder = "e.g. Finish Math Homework";
             }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
     </script>
 </body>
