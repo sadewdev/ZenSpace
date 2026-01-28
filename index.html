@@ -137,10 +137,11 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar w-20 md:w-64 h-full flex flex-col justify-between p-4 z-20 shrink-0">
         <div>
-            <!-- Logo Area -->
+            <!-- Logo Area (Animated) -->
             <div class="flex items-center gap-3 px-2 mb-8 mt-2">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-cyan-400 text-white flex items-center justify-center text-lg shadow-md shrink-0">
-                    <i class="fa-solid fa-shapes"></i>
+                <div class="w-12 h-12 flex items-center justify-center shrink-0">
+                    <!-- Added Lottie Player for Logo, removed background box -->
+                    <lottie-player id="sticker-logo" background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay></lottie-player>
                 </div>
                 <div class="hidden md:block overflow-hidden">
                     <h1 class="font-bold text-lg tracking-tight truncate">ZenSpace</h1>
@@ -412,6 +413,7 @@
         
         window.addEventListener('DOMContentLoaded', async () => {
             await initDB();
+            loadTGS('assets/logo.tgs', 'sticker-logo');
             loadTGS('assets/welcome.tgs', 'sticker-welcome');
             loadTGS('assets/books.tgs', 'sticker-empty-books');
             loadTGS('assets/todo.tgs', 'sticker-empty-tasks');
